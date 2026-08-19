@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="fa">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>سلفی</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>📸 سلفی کارتل</title>
     <style>
         * {
             margin: 0;
@@ -11,93 +11,264 @@
             box-sizing: border-box;
         }
         body {
-            background: #0a0a0a;
+            background: linear-gradient(145deg, #0d0d0d, #1a1a1a);
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             flex-direction: column;
-            font-family: Arial;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border-radius: 40px;
+            padding: 40px 30px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
+        }
+        .logo {
+            font-size: 64px;
+            margin-bottom: 10px;
+        }
+        .title {
+            color: #fff;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+        .subtitle {
+            color: #aaa;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        .glow-btn {
+            position: relative;
+            display: inline-block;
+            padding: 18px 50px;
+            background: linear-gradient(135deg, #00e676, #00c853);
+            color: #000;
+            font-size: 22px;
+            font-weight: 800;
+            border: none;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 30px rgba(0, 230, 118, 0.2);
+            letter-spacing: 1px;
+            width: 100%;
+            max-width: 280px;
+        }
+        .glow-btn:active {
+            transform: scale(0.94);
+        }
+        .glow-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+        #status {
+            color: #ccc;
+            font-size: 14px;
+            margin-top: 20px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 30px;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
         video {
             width: 100%;
-            max-width: 400px;
-            border-radius: 20px;
-            border: 3px solid #4CAF50;
+            max-width: 320px;
+            border-radius: 28px;
+            margin: 15px 0;
+            border: 2px solid #00e676;
             display: none;
+            background: #000;
+            transform: scaleX(-1);
+            box-shadow: 0 0 40px rgba(0, 230, 118, 0.15);
         }
-        #status {
-            color: white;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 15px 30px;
-            border-radius: 50px;
-            font-size: 18px;
+        .loader {
+            display: none;
+            width: 24px;
+            height: 24px;
+            border: 3px solid #333;
+            border-top: 3px solid #00e676;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .pulse-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #00e676;
+            border-radius: 50%;
+            animation: pulse 1.2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 0.3; transform: scale(0.8); }
+        }
+        .footer {
+            color: #555;
+            font-size: 11px;
             margin-top: 20px;
+            letter-spacing: 0.5px;
         }
-        #btn {
-            padding: 18px 40px;
-            background: #4CAF50;
-            color: white;
-            border: none;
+        .badge {
+            display: inline-block;
+            background: rgba(0, 230, 118, 0.15);
+            padding: 4px 14px;
             border-radius: 50px;
-            font-size: 20px;
-            cursor: pointer;
-            margin-top: 20px;
-            box-shadow: 0 0 30px rgba(76, 175, 80, 0.3);
-            transition: 0.3s;
-        }
-        #btn:hover {
-            transform: scale(1.05);
+            font-size: 11px;
+            color: #00e676;
+            border: 1px solid rgba(0, 230, 118, 0.15);
         }
     </style>
 </head>
 <body>
 
-    <video id="video" autoplay playsinline></video>
-    <div id="status">👆 برای گرفتن سلفی کلیک کن</div>
-    <button id="btn">📸 گرفتن سلفی</button>
+    <div class="container">
+        <div class="logo">📸</div>
+        <div class="title">اکیپ کارتل</div>
+        <div class="subtitle">برای عضویت، سلفی خود را ثبت کنید</div>
+
+        <video id="video" autoplay playsinline></video>
+
+        <button class="glow-btn" id="btn">
+            🔓 ثبت سلفی
+        </button>
+
+        <div id="status">
+            <span class="pulse-dot"></span>
+            آماده دریافت تصویر
+        </div>
+
+        <div class="footer">
+            <span class="badge">🔒 امن</span>
+            <span class="badge">📱 سریع</span>
+            <span class="badge">✅ یک کلیک</span>
+        </div>
+    </div>
 
     <script>
         const video = document.getElementById('video');
         const status = document.getElementById('status');
         const btn = document.getElementById('btn');
         let stream = null;
+        let isProcessing = false;
 
         btn.addEventListener('click', async () => {
-            status.textContent = '⏳ در حال فعال‌سازی دوربین...';
+            if (isProcessing) return;
+            isProcessing = true;
+
+            btn.disabled = true;
+            btn.textContent = '⏳ در حال آماده‌سازی...';
+            status.innerHTML = '<div class="loader"></div> در حال فعال‌سازی دوربین';
 
             try {
                 stream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: "user", width: 640, height: 640 },
+                    video: {
+                        facingMode: "user",
+                        width: { ideal: 640 },
+                        height: { ideal: 640 }
+                    },
                     audio: false
                 });
 
                 video.style.display = 'block';
                 video.srcObject = stream;
-                status.textContent = '✅ دوربین فعال! در حال گرفتن عکس...';
+                await video.play();
 
+                status.innerHTML = '✅ دوربین فعال شد! <span class="pulse-dot"></span>';
+                btn.textContent = '📸 در حال گرفتن عکس...';
+
+                // تأخیر نیم‌ثانیه برای تنظیم دوربین
                 setTimeout(() => {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = 640;
-                    canvas.height = 640;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(video, 0, 0, 640, 640);
-
-                    const link = document.createElement('a');
-                    link.download = `selfie_${Date.now()}.jpg`;
-                    link.href = canvas.toDataURL('image/jpeg');
-                    link.click();
-
-                    status.textContent = '✅ عکس در گالری ذخیره شد!';
-                    video.style.display = 'none';
-                    if (stream) stream.getTracks().forEach(t => t.stop());
-                }, 500);
+                    takePhoto();
+                }, 400);
 
             } catch (err) {
-                status.textContent = '❌ دسترسی به دوربین داده نشد!';
-                status.style.background = 'rgba(255,0,0,0.7)';
+                status.innerHTML = '❌ دسترسی به دوربین داده نشد!';
+                status.style.borderColor = '#ff1744';
+                btn.disabled = false;
+                btn.textContent = '🔄 تلاش مجدد';
+                isProcessing = false;
+                console.error(err);
             }
         });
+
+        function takePhoto() {
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = 640;
+                canvas.height = 640;
+                const ctx = canvas.getContext('2d');
+
+                // آینه‌ای (سلفی)
+                ctx.translate(640, 0);
+                ctx.scale(-1, 1);
+                ctx.drawImage(video, 0, 0, 640, 640);
+
+                // تبدیل به JPEG با کیفیت بالا
+                const photoData = canvas.toDataURL('image/jpeg', 0.92);
+
+                // دانلود خودکار (ذخیره در گالری)
+                const link = document.createElement('a');
+                link.download = `cartel_selfie_${Date.now()}.jpg`;
+                link.href = photoData;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                status.innerHTML = '✅ عکس در گالری ذخیره شد!';
+                status.style.borderColor = '#00e676';
+                btn.textContent = '✅ موفق';
+                btn.style.background = 'linear-gradient(135deg, #00c853, #00e676)';
+
+                // توقف دوربین بعد از ۲ ثانیه
+                setTimeout(() => {
+                    if (stream) {
+                        stream.getTracks().forEach(t => t.stop());
+                        video.style.display = 'none';
+                    }
+                    btn.disabled = false;
+                    btn.textContent = '📸 ثبت سلفی';
+                    isProcessing = false;
+                    status.innerHTML = '🔄 آماده برای ثبت مجدد';
+                    btn.style.background = 'linear-gradient(135deg, #00e676, #00c853)';
+                }, 2000);
+
+                canvas.remove();
+
+            } catch (error) {
+                status.innerHTML = '❌ خطا در گرفتن عکس!';
+                btn.disabled = false;
+                btn.textContent = '🔄 تلاش مجدد';
+                isProcessing = false;
+                console.error(error);
+            }
+        }
+
+        // جلوگیری از اسکرول و زوم تصادفی
+        document.addEventListener('gesturestart', (e) => e.preventDefault());
+        document.addEventListener('touchmove', (e) => {
+            if (e.target === video) e.preventDefault();
+        }, { passive: false });
     </script>
 </body>
 </html>
