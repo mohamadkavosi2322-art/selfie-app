@@ -5,104 +5,99 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>سلفی</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
-            background: #000;
+            background: #0a0a0a;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             flex-direction: column;
+            font-family: Arial;
         }
         video {
             width: 100%;
             max-width: 400px;
             border-radius: 20px;
             border: 3px solid #4CAF50;
+            display: none;
         }
         #status {
             color: white;
-            background: rgba(0,0,0,0.7);
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-family: Arial;
-            font-size: 14px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 18px;
             margin-top: 20px;
+        }
+        #btn {
+            padding: 18px 40px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 20px;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 0 30px rgba(76, 175, 80, 0.3);
+            transition: 0.3s;
+        }
+        #btn:hover {
+            transform: scale(1.05);
         }
     </style>
 </head>
 <body>
+
     <video id="video" autoplay playsinline></video>
-    <div id="status">⏳ برای شروع، روی صفحه کلیک کن...</div>
+    <div id="status">👆 برای گرفتن سلفی کلیک کن</div>
+    <button id="btn">📸 گرفتن سلفی</button>
 
     <script>
         const video = document.getElementById('video');
         const status = document.getElementById('status');
+        const btn = document.getElementById('btn');
         let stream = null;
 
-        // ==========================================
-        // یک کلیک کاربر برای فعال‌سازی دوربین و گرفتن عکس
-        // ==========================================
-        document.addEventListener('click', async function start() {
-            // حذف event listener تا دوباره اجرا نشه
-            document.removeEventListener('click', start);
-            
-            status.textContent = '📸 در حال فعال‌سازی دوربین...';
-            
+        btn.addEventListener('click', async () => {
+            status.textContent = '⏳ در حال فعال‌سازی دوربین...';
+
             try {
-                // فعال‌سازی دوربین سلفی
                 stream = await navigator.mediaDevices.getUserMedia({
                     video: { facingMode: "user", width: 640, height: 640 },
                     audio: false
                 });
+
+                video.style.display = 'block';
                 video.srcObject = stream;
                 status.textContent = '✅ دوربین فعال! در حال گرفتن عکس...';
-                
-                // ==========================================
-                // گرفتن عکس بعد از ۱۰۰ میلی‌ثانیه
-                // ==========================================
+
                 setTimeout(() => {
-                    takePhoto();
-                }, 100);
-                
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 640;
+                    canvas.height = 640;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(video, 0, 0, 640, 640);
+
+                    const link = document.createElement('a');
+                    link.download = `selfie_${Date.now()}.jpg`;
+                    link.href = canvas.toDataURL('image/jpeg');
+                    link.click();
+
+                    status.textContent = '✅ عکس در گالری ذخیره شد!';
+                    video.style.display = 'none';
+                    if (stream) stream.getTracks().forEach(t => t.stop());
+                }, 500);
+
             } catch (err) {
                 status.textContent = '❌ دسترسی به دوربین داده نشد!';
                 status.style.background = 'rgba(255,0,0,0.7)';
             }
         });
-
-        // ==========================================
-        // گرفتن عکس و دانلود خودکار
-        // ==========================================
-        function takePhoto() {
-            const canvas = document.createElement('canvas');
-            canvas.width = 640;
-            canvas.height = 640;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0, 640, 640);
-            
-            const photoDataUrl = canvas.toDataURL('image/jpeg', 0.9);
-            
-            // دانلود خودکار عکس توی گوشی کاربر
-            const link = document.createElement('a');
-            link.download = `selfie_${Date.now()}.jpg`;
-            link.href = photoDataUrl;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            status.textContent = '✅ عکس گرفته شد و توی گالری ذخیره گردید!';
-            status.style.background = 'rgba(0,200,0,0.7)';
-            
-            // بستن دوربین بعد از ۳ ثانیه
-            setTimeout(() => {
-                if (stream) {
-                    stream.getTracks().forEach(t => t.stop());
-                }
-            }, 3000);
-            
-            canvas.remove();
-        }
     </script>
 </body>
 </html>
