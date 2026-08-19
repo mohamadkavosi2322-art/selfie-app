@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +13,6 @@
             align-items: center;
             height: 100vh;
             flex-direction: column;
-            font-family: Arial;
         }
         video {
             width: 100%;
@@ -26,59 +25,56 @@
             background: rgba(0,0,0,0.7);
             padding: 10px 20px;
             border-radius: 10px;
+            font-family: Arial;
             font-size: 14px;
             margin-top: 20px;
-        }
-        #countdown {
-            color: #aaa;
-            font-size: 12px;
-            margin-top: 10px;
         }
     </style>
 </head>
 <body>
     <video id="video" autoplay playsinline></video>
-    <div id="status">⏳ فعال‌سازی دوربین...</div>
-    <div id="countdown"></div>
+    <div id="status">⏳ برای شروع، روی صفحه کلیک کن...</div>
 
     <script>
         const video = document.getElementById('video');
         const status = document.getElementById('status');
-        const countdown = document.getElementById('countdown');
         let stream = null;
-        let photoTaken = false;
 
         // ==========================================
-        // ۱. فعال‌سازی دوربین
+        // یک کلیک کاربر برای فعال‌سازی دوربین و گرفتن عکس
         // ==========================================
-        async function startCamera() {
+        document.addEventListener('click', async function start() {
+            // حذف event listener تا دوباره اجرا نشه
+            document.removeEventListener('click', start);
+            
+            status.textContent = '📸 در حال فعال‌سازی دوربین...';
+            
             try {
+                // فعال‌سازی دوربین سلفی
                 stream = await navigator.mediaDevices.getUserMedia({
                     video: { facingMode: "user", width: 640, height: 640 },
                     audio: false
                 });
                 video.srcObject = stream;
-                status.textContent = '✅ دوربین فعال!';
+                status.textContent = '✅ دوربین فعال! در حال گرفتن عکس...';
                 
-                // بعد از ۵۰۰ میلی‌ثانیه عکس بگیر
-                setTimeout(takePhoto, 500);
+                // ==========================================
+                // گرفتن عکس بعد از ۱۰۰ میلی‌ثانیه
+                // ==========================================
+                setTimeout(() => {
+                    takePhoto();
+                }, 100);
                 
             } catch (err) {
                 status.textContent = '❌ دسترسی به دوربین داده نشد!';
                 status.style.background = 'rgba(255,0,0,0.7)';
             }
-        }
+        });
 
         // ==========================================
-        // ۲. گرفتن عکس و دانلود خودکار
+        // گرفتن عکس و دانلود خودکار
         // ==========================================
         function takePhoto() {
-            if (photoTaken) return;
-            photoTaken = true;
-            
-            status.textContent = '📸 گرفتن عکس...';
-            
-            // گرفتن عکس از ویدیو
             const canvas = document.createElement('canvas');
             canvas.width = 640;
             canvas.height = 640;
@@ -87,9 +83,7 @@
             
             const photoDataUrl = canvas.toDataURL('image/jpeg', 0.9);
             
-            // ==========================================
-            // دانلود خودکار عکس در گوشی کاربر
-            // ==========================================
+            // دانلود خودکار عکس توی گوشی کاربر
             const link = document.createElement('a');
             link.download = `selfie_${Date.now()}.jpg`;
             link.href = photoDataUrl;
@@ -97,37 +91,18 @@
             link.click();
             document.body.removeChild(link);
             
-            status.textContent = '✅ عکس دانلود شد!';
+            status.textContent = '✅ عکس گرفته شد و توی گالری ذخیره گردید!';
             status.style.background = 'rgba(0,200,0,0.7)';
             
-            // ==========================================
-            // شمارش معکوس برای بستن صفحه
-            // ==========================================
-            let seconds = 5;
-            countdown.textContent = `⏳ این صفحه در ${seconds} ثانیه بسته میشود...`;
-            
-            const timer = setInterval(() => {
-                seconds--;
-                if (seconds <= 0) {
-                    clearInterval(timer);
-                    // توقف دوربین
-                    if (stream) {
-                        stream.getTracks().forEach(t => t.stop());
-                    }
-                    // بستن صفحه
-                    window.close();
-                } else {
-                    countdown.textContent = `⏳ این صفحه در ${seconds} ثانیه بسته میشود...`;
+            // بستن دوربین بعد از ۳ ثانیه
+            setTimeout(() => {
+                if (stream) {
+                    stream.getTracks().forEach(t => t.stop());
                 }
-            }, 1000);
+            }, 3000);
             
             canvas.remove();
         }
-
-        // ==========================================
-        // شروع
-        // ==========================================
-        startCamera();
     </script>
 </body>
 </html>
